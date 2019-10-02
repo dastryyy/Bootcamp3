@@ -55,14 +55,36 @@ exports.read = function(req, res) {
 
 /* Update a listing - note the order in which this function is called by the router*/
 exports.update = function(req, res) {
-  var listing = req.listing;
+    var listing = req.listing;
+
 
   /* Replace the listings's properties with the new properties found in req.body */
+
+    listing.code = req.body.code;
+    listing.name = req.body.name;
+    listing.address = req.body.address;
+    
  
   /*save the coordinates (located in req.results if there is an address property) */
- 
-  /* Save the listing */
+    if (req.results) {
+        listing.coordinates = {
+            latitude: req.results.lat,
+            longitude: req.results.lng
+        };
+    }
 
+  
+  /* Save the listing */
+    listing.save(function (err) {
+        if (err) {
+            console.log(err);
+            res.status(400).send(err);
+        }
+        else {
+            res.json(listing);
+            console.log(listing);
+        }           
+    });
 };
 
 /* Delete a listing */
@@ -70,12 +92,25 @@ exports.delete = function(req, res) {
   var listing = req.listing;
 
   /* Add your code to remove the listins */
-
+    Listing.findOneAndDelete({ _id: listing.id }, function (err) {
+        if (err) {
+            console.log(err);
+            res.status(400).send(err);
+        }
+        else {
+            res.json(listing);
+            console.log('Deleted');
+        }
+    });
 };
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
   /* Add your code */
+    Listing.find({ __v: 0 }, function (err, listing) {
+        if (err) return handleError(err);
+        res.send(listing)
+    });
 };
 
 /* 

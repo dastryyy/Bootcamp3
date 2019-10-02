@@ -9,7 +9,7 @@ var path = require('path'),
 
 module.exports.init = function() {
   //connect to database
-  mongoose.connect(config.db.uri, { useNewUrlParser: true });
+  mongoose.connect(config.db.uri, { useNewUrlParser: true , useUnifiedTopology: true});
     mongoose.set('useCreateIndex', true);
     mongoose.set('useFindAndModify', false);
 
@@ -32,8 +32,7 @@ module.exports.init = function() {
      use the listings router middleware for requests to the api 
      check the variables list above
   */
-  app.use('/api/listings');
-
+    app.use('/api/listings', listingsRouter);
 
    /* Request Handler for coordinates
       This is a server wrapper around Open Cage Data Geocoding API to get latitude + longitude coordinates from address */
@@ -53,6 +52,7 @@ module.exports.init = function() {
       If no path segments are passed, path.resolve() will return the absolute path of the current working directory.
    */
    //res.sendFile(path.resolve(...));
+      res.sendFile(path.resolve('client','index.html'));
   });
   
   return app;
